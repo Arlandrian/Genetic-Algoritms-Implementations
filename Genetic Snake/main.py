@@ -2,7 +2,6 @@ import argparse
 from datetime import datetime
 import random
 import numpy as np
-
 import time
 
 #total generations
@@ -33,10 +32,11 @@ def run(args):
         new_population = []
         for i in range(args.population_size):
 
-            x = fitness(ma)
+           # x = fitness(ma)
 
-            if random.random() < args.mut_rate
-                mutate(child)
+            if random.random() < args.mut_rate:
+                i=2
+              #  mutate(child)
 
 def generateWorld(N = 10,foodCount= 5):
 
@@ -60,7 +60,7 @@ def generatePathRandom(gene_length):
     return path
 
 def mutate(child):
-
+    i = 2
 def fitness(world,path,startX,startY,foodCount):
     #Return fitness value for path parameter
     #min:0, max:2
@@ -78,11 +78,11 @@ def fitness(world,path,startX,startY,foodCount):
             posY +=1
         elif direction == 3:#left
             posX -=1
-        else direction == 4:#down
+        else :#down
             posY -=1
         return posX,posY
                 
-    def checkCollision()
+    def checkCollision():
         #check if collided with wall
         if world_size == posX or world_size == posY or posX == 0 or posY == 0:
             return -1
@@ -94,9 +94,9 @@ def fitness(world,path,startX,startY,foodCount):
 
     total_food_count = foodCount
     food_eaten = 0
-    for i in len(path)
+    for i in len(path):
 
-        posX,posY = proceed(posX,posY)
+        posX,posY = proceed(posX,posY,path[i])
 
         collision = checkCollision() 
 
@@ -109,7 +109,7 @@ def fitness(world,path,startX,startY,foodCount):
                 result = 1 + i/total_path
                 break
                 
-        else collision < 0:#collided with wall
+        else :# collision < 0 collided with wall
             result = food_eaten/total_food_count + i/total_path
             break
 
