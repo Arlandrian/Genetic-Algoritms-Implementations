@@ -10,6 +10,12 @@ import time
 #mutaiton rate
 
 def run(args):
+
+    
+
+    startX = args.startx
+    startY = args.starty
+    foodCount = args.food_count
     world = generateWorld(args.world_size)
 
     gene_length = int(args.world_size*args.food_count*0.6)#aka chromosome length (0.6 is random)
@@ -19,13 +25,28 @@ def run(args):
     for i in range(args.population_size):
         population.append(generatePathRandom(gene_length))
     
+    population_finess_values = []
+    total_fitness = 0
+    max_fitness = 0
+    max_fitness_index = 0
     
+    for i in range(args.population_size):
+        fit = fitness(world,population[i],startX,startY,foodCount)
+        population_finess_values.append(fit)
+        total_fitness += fit
+        if fit > max_fitness : 
+            max_fitness = fit
+            max_fitness_index = i
+
+    avg_fitness = total_fitness / args.population_size
+    
+
     total_generations = 0
 
     start_time = time.time()
     elapsed_time = 0
 
-    while elapsed_time > args.duration : #### or enough fit individiual found
+    while elapsed_time > args.duration :## or  avg_fitness >= 2 : #### or enough fit individiual found
         elapsed_time = (time.time() - start_time)##this is as seconds
         total_generations +=1
         #new_population <- empty set
@@ -53,7 +74,6 @@ def generateWorld(N = 10,foodCount= 5):
 
 def generatePathRandom(gene_length):
     path = []
-
     for i in range(gene_length):
         path.append( random.randint(1,4) )
 
@@ -61,17 +81,8 @@ def generatePathRandom(gene_length):
 
 def mutate(child):
     i = 2
-def fitness(world,path,startX,startY,foodCount):
-    #Return fitness value for path parameter
-    #min:0, max:2
-    
-    total_path = len(path)
-    world_size = len(world[0])
 
-    posX = startX
-    posY = startY   
-
-    def proceed(posX,posY,direction):
+def proceed(posX,posY,direction):
         if direction == 1:#right
             posX += 1
         elif direction == 2:#up
@@ -82,41 +93,55 @@ def fitness(world,path,startX,startY,foodCount):
             posY -=1
         return posX,posY
                 
-    def checkCollision():
-        #check if collided with wall
-        if world_size == posX or world_size == posY or posX == 0 or posY == 0:
-            return -1
-        #check if collided with food
-        if world[posX][posY] == 1:
-            return 1
-        
-        return 0
+def checkCollision(world,world_size,eaten_foods,posX,posY):
+    #check if collided with wall
+    if posX >= world_size or posY >= world_size or posX < 0 or posY < 0:
+        return -1
+    #check if collided with food
+    if world[posX][posY] == 1 and (posX,posY) not in eaten_foods:
+        eaten_foods.append((posX,posY)) 
+        return 1
+    
+    return 0
+
+def fitness(world,path,startX,startY,foodCount):
+    #Return fitness value for path parameter
+    #min:0, max:2
+    total_path = len(path)
+    world_size = len(world[0])
+
+    posX = startX
+    posY = startY   
 
     total_food_count = foodCount
-    food_eaten = 0
-    for i in len(path):
+    #food_eaten = 0
+    eaten_foods = []
+
+    result = -1
+    for i in range(len(path)):
 
         posX,posY = proceed(posX,posY,path[i])
 
-        collision = checkCollision() 
+        collision = checkCollision(world,world_size,eaten_foods,posX,posY) 
 
         if collision == 0:#no collision
             continue
+
         elif collision > 0:#collided with food
-            food_eaten += 1
-            if(food_eaten == foodCount):#eaten all food
+
+            if(len(eaten_foods) == foodCount):#eaten all food
                 #fitness = food_eaten/total_food_count + i/total_path !!! can it be enhanced ???
                 result = 1 + i/total_path
                 break
                 
-        else :# collision < 0 collided with wall
-            result = food_eaten/total_food_count + i/total_path
+        else :# collision < 0 collided with wall ## min:0, max:2
+            result = len(eaten_foods)/total_food_count + i/total_path
             break
 
-    result = food_eaten/total_food_count + i/total_path
+    if(result == -1):
+        result = len(eaten_foods)/total_food_count + 1
 
-
-
+    return result
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -128,7 +153,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_gen', type=int, default=20, help='Number of equal generations before stopping')
     parser.add_argument("--startx",type=int,default=5,help='start position x')
     parser.add_argument("--starty",type=int,default=5,help='start position y')
-    parser.add_argument("--duration",type=int,default=3,help='waiting time')
+    parser.add_argument("--duration",type=int,default=5,help='waiting time')
 
 
     random.seed(datetime.now())
