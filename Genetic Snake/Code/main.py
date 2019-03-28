@@ -289,15 +289,15 @@ def mutate(path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--world_size",type=int,default=17)
-    parser.add_argument("--food_count",type=int,default=10)
-    parser.add_argument("--population_size",type=int,default=200)
-    parser.add_argument('--mut_rate', type=float, default=0.2, help='Mutation rate')
+    parser.add_argument("--world_size",type=int,default=31)
+    parser.add_argument("--food_count",type=int,default=120)
+    parser.add_argument("--population_size",type=int,default=100)
+    parser.add_argument('--mut_rate', type=float, default=0.15, help='Mutation rate')
     parser.add_argument('--n_gen', type=int, default=20, help='Number of equal generations before stopping')
-    parser.add_argument("--startx",type=int,default=5,help='start position x')
-    parser.add_argument("--starty",type=int,default=5,help='start position y')
+    parser.add_argument("--startx",type=int,default=15,help='start position x')
+    parser.add_argument("--starty",type=int,default=15,help='start position y')
     parser.add_argument("--duration",type=int,default=500,help='waiting time')
-    parser.add_argument("--max_generation_number",type=int,default=450,help='Max generation number for stop')
+    parser.add_argument("--max_generation_number",type=int,default=300,help='Max generation number for stop')
 
 
     #random.seed(datetime.now())
